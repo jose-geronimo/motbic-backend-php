@@ -3,21 +3,25 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
     public function login(Request $request)
     {
-        $credentials = $request->validate([
+        $request->validate([
             'username' => 'required',
             'password' => 'required',
         ]);
 
-        // Mock authentication
-        if ($credentials['username'] === 'admin' && $credentials['password'] === 'admin123') {
-             return response()->json([
-                'refresh' => 'mock_refresh_token_' . time(),
-                'access' => 'mock_access_token_' . time(),
+        // Map 'username' to 'email' for authentication
+        if (Auth::attempt(['email' => $request->username, 'password' => $request->password])) {
+            $user = Auth::user();
+            $token = $user->createToken('api-token')->plainTextToken;
+
+            return response()->json([
+                'refresh' => 'refresh_token_placeholder', // Sanctum uses long-lived tokens
+                'access' => $token,
             ]);
         }
 
@@ -26,8 +30,11 @@ class AuthController extends Controller
 
     public function refresh(Request $request)
     {
+        // Sanctum doesn't use refresh tokens by default. 
+        // You would typically just issue a new token if the old one is expiring, 
+        // but that requires the user to be authenticated.
         return response()->json([
-            'access' => 'mock_new_access_token_' . time(),
+            'access' => 'new_mock_token_placeholder',
         ]);
     }
 }

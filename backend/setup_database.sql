@@ -1,0 +1,4 @@
+CREATE DATABASE IF NOT EXISTS motbic;
+CREATE USER IF NOT EXISTS 'motbic'@'localhost' IDENTIFIED BY 'secret';
+GRANT ALL PRIVILEGES ON motbic.* TO 'motbic'@'localhost';
+FLUSH PRIVILEGES;
